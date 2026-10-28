@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="theme-color" content="#020617">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Qarar AI">
+  <meta name="application-name" content="Qarar AI">
+  <meta name="description" content="منصة قرار AI للاستثمار الذكي وتحليل الأسهم والذهب والعملات في السوق المصري والخليجي والإماراتي">
+  <link rel="manifest" id="pwaManifestLink" href="/manifest.json">
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/sw.js").catch(() => {});
+      });
+    }
+  </script>
+  <title>Qarar AI | قرار AI - منصة الاستثمار الذكي</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Cairo', 'Inter', 'sans-serif'],
+            mono: ['Inter', 'monospace']
+          },
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              900: '#064e3b'
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { font-family: 'Cairo', 'Inter', sans-serif; }
+    .num-ltr { direction: ltr; display: inline-block; font-family: 'Inter', 'Cairo', sans-serif; }
+    @keyframes rowFlash {
+      0% { background-color: rgba(16, 185, 129, 0.35); }
+      100% { background-color: transparent; }
+    }
+    .flash-row { animation: rowFlash 1.8s ease-out; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.4); }
+    ::-webkit-scrollbar-thumb { background: rgba(16, 185, 129, 0.4); border-radius: 9999px; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-emerald-500 selection:text-white transition-colors duration-200">
+
+  <!-- Top Header -->
+  <header id="mainStickyHeader" class="sticky top-0 z-30 border-b border-slate-800/80 bg-slate-950/95 backdrop-blur-md transition-transform duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+          <svg class="w-6 h-6 text-slate-950" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-white">Qarar <span class="text-emerald-400">AI</span></h1>
+            <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">قرار الذكي</span>
+          </div>
+          <p class="text-xs text-slate-400 hidden sm:block">منصة الاستثمار الذكي للسوق المصري والخليجي</p>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="flex items-center gap-1 bg-slate-900/90 p-1 rounded-xl border border-slate-800 overflow-x-auto max-w-full" aria-label="التنقل الرئيسي">
+        <button type="button" data-tab="dashboard" class="nav-tab px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-emerald-500 text-slate-950 shadow">لوحة التحكم</button>
+        <button type="button" data-tab="chat" class="nav-tab px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all text-emerald-300 hover:text-white flex items-center gap-1.5 border border-emerald-500/30 bg-emerald-500/10"><span>💬 محادثة قرار AI</span></button>
+        <button type="button" data-tab="signals" class="nav-tab px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-300 hover:text-white">إشارات الذكاء الاصطناعي</button>
+        <button type="button" data-tab="advisor" class="nav-tab px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-300 hover:text-white">صانع القرار الذكي</button>
+        <button type="button" data-tab="portfolio" class="nav-tab px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-300 hover:text-white">محفظتي والتداول</button>
+      </nav>
+
+      <!-- Utility Controls -->
+      <div class="flex items-center gap-2">
+        <select id="currencySelect" class="bg-slate-900 border border-slate-700 text-slate-200 text-xs sm:text-sm rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-emerald-500">
+          <option value="EGP">ج.م (EGP)</option>
+          <option value="SAR">ر.س (SAR)</option>
+          <option value="AED">د.إ (AED)</option>
+          <option value="USD">$ (USD)</option>
+          <option value="GBP">£ إسترليني (GBP)</option>
+          <option value="EUR">€ يورو (EUR)</option>
+        </select>
+        <button type="button" id="openQuickTradeBtn" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm px-3.5 py-1.5 rounded-lg transition flex items-center gap-1.5 shadow-md shadow-emerald-500/10">
+          <span>+ أمر استثمار</span>
+        </button>
+        <button type="button" id="openPlayStoreReadyBtn" class="bg-slate-900 hover:bg-slate-800 text-emerald-400 border border-emerald-500/40 font-bold text-xs px-2.5 py-1.5 rounded-lg transition flex items-center gap-1">
+          <span>📲 تثبيت / المتجر</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Market Selector Bar -->
+  <div id="marketSelectorSection" class="bg-slate-900/90 border-b border-slate-800/80 transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-2 flex-wrap">
+        <span class="text-xs font-bold text-slate-300">اختر السوق الاستثماري:</span>
+        <div class="flex flex-wrap rounded-xl bg-slate-950 p-1 border border-slate-800 gap-1">
+          <button type="button" data-market="EGX" class="market-switch-btn px-3 py-1 rounded-lg text-xs font-bold transition bg-emerald-500 text-slate-950 shadow">🇪🇬 السوق المصري (EGX)</button>
+          <button type="button" data-market="GCC" class="market-switch-btn px-3 py-1 rounded-lg text-xs font-bold transition text-slate-300 hover:text-white">🇸🇦 السوق الخليجي (تداول)</button>
+          <button type="button" data-market="UAE" class="market-switch-btn px-3 py-1 rounded-lg text-xs font-bold transition text-slate-300 hover:text-white">🇦🇪 السوق الإماراتي (دبي وأبوظبي)</button>
+          <button type="button" data-market="BOTH" class="market-switch-btn px-3 py-1 rounded-lg text-xs font-bold transition text-slate-300 hover:text-white">🌍 المحفظة المدمجة</button>
+        </div>
+      </div>
+      <div class="flex items-center gap-3 text-xs">
+        <span id="marketIndexLiveTicker" class="text-slate-300 font-semibold">مؤشر EGX 30: <strong class="text-emerald-400 num-ltr">49,234.35</strong> نقطة</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
+
+    <!-- AI Market Pulse Banner -->
+    <section class="rounded-2xl bg-gradient-to-l from-emerald-950/70 via-slate-900 to-slate-900 border border-emerald-500/30 p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div class="flex items-start gap-3">
+        <span class="mt-1 flex h-3 w-3 relative shrink-0">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+        </span>
+        <div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-xs font-bold uppercase tracking-wider text-emerald-400" id="pulseMarketBadge">نبض السوق المصري (EGX)</span>
+            <span class="text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-300" id="marketSentimentBadge">حالة السوق: إيجابي متوازن (76/100)</span>
+          </div>
+          <p class="text-sm text-slate-200 mt-1" id="aiPulseText">يتداول مؤشر EGX 30 عند 49,234 نقطة؛ يوصي قرار AI بالتركيز على الأسهم ذات التدفقات النقدية القوية.</p>
+        </div>
+      </div>
+      <button type="button" id="refreshPulseBtn" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700 transition">تحديث التحليل</button>
+    </section>
+
+    <!-- TAB 1: DASHBOARD -->
+    <div id="tab-dashboard" class="tab-panel space-y-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4">
+          <div class="flex items-center justify-between text-xs text-slate-400">
+            <span>إجمالي قيمة المحفظة</span>
+            <span class="text-emerald-400 font-semibold bg-emerald-500/10 px-2 py-0.5 rounded-full" id="activeMarketPill">السوق المصري</span>
+          </div>
+          <div class="text-2xl font-extrabold text-white mt-2" id="kpiTotalValue">553,399 ج.م</div>
+          <div class="text-xs text-emerald-400 mt-1 flex items-center gap-1">
+            <span class="num-ltr" id="kpiTotalChange">+13.0%</span>
+            <span class="text-slate-400">إجمالي العائد</span>
+          </div>
+        </div>
+
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4">
+          <div class="flex items-center justify-between text-xs text-slate-400">
+            <span>صافي الأرباح غير المحققة</span>
+            <span class="text-teal-400 font-semibold">العائد</span>
+          </div>
+          <div class="text-2xl font-extrabold text-emerald-400 mt-2" id="kpiTotalProfit">+49,699 ج.م</div>
+          <div class="text-xs text-slate-400 mt-1">المراكز: <span class="text-slate-200 font-semibold num-ltr" id="kpiHoldingsCount">6 أصول</span></div>
+        </div>
+
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4">
+          <div class="flex items-center justify-between text-xs text-slate-400">
+            <span>السيولة النقدية</span>
+            <button type="button" id="quickAddCashBtn" class="text-[11px] text-amber-400 hover:underline font-bold">+ إيداع</button>
+          </div>
+          <div class="text-2xl font-extrabold text-white mt-2" id="kpiAvailableCash">120,000 ج.م</div>
+          <div class="text-xs text-slate-400 mt-1">نسبة الكاش: <span id="kpiCashRatio" class="text-slate-200 font-semibold num-ltr">21.7%</span></div>
+        </div>
+
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4">
+          <div class="flex items-center justify-between text-xs text-slate-400">
+            <span>تقييم المخاطر</span>
+            <span class="text-sky-400 font-semibold" id="kpiRiskLabel">متوازن</span>
+          </div>
+          <div class="text-2xl font-extrabold text-white mt-2">درجة الأمان <span class="text-emerald-400 num-ltr">86%</span></div>
+          <div class="w-full bg-slate-800 h-2 rounded-full mt-2 overflow-hidden">
+            <div class="bg-gradient-to-l from-emerald-400 to-sky-500 h-full rounded-full" style="width: 86%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 bg-slate-900/90 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+            <h2 class="text-base font-bold text-white" id="perfChartHeading">أداء محفظتك مقابل السوق</h2>
+            <div class="flex items-center gap-1 bg-slate-950 p-1 rounded-lg border border-slate-800">
+              <button type="button" data-range="1M" class="range-btn px-2.5 py-1 rounded text-xs text-slate-400">شهر</button>
+              <button type="button" data-range="3M" class="range-btn px-2.5 py-1 rounded text-xs text-slate-400">3 أشهر</button>
+              <button type="button" data-range="1Y" class="range-btn px-2.5 py-1 rounded text-xs bg-emerald-500 text-slate-950 font-bold">سنة</button>
+            </div>
+          </div>
+          <div class="relative h-72 w-full"><canvas id="performanceChart"></canvas></div>
+        </div>
+
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between">
+          <h2 class="text-base font-bold text-white mb-2">توزيع الأصول الحالي</h2>
+          <div class="relative h-56 w-full"><canvas id="allocationChart"></canvas></div>
+          <div id="allocationLegend" class="mt-4 space-y-1.5 text-xs"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: CHAT -->
+    <div id="tab-chat" class="tab-panel hidden space-y-4">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl flex flex-col h-[600px]">
+        <div class="px-5 py-3 border-b border-slate-800 flex items-center justify-between">
+          <span class="text-sm font-extrabold text-white">مستشار قرار الذكي</span>
+          <span id="detectedLangBadge" class="text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">تحليل تلقائي</span>
+        </div>
+        <div id="fullAiChatMessages" class="flex-1 overflow-y-auto p-4 space-y-4 text-sm">
+          <div class="flex items-start gap-3">
+            <div class="w-8 h-8 rounded-xl bg-emerald-500 text-slate-950 font-extrabold flex items-center justify-center text-xs">AI</div>
+            <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 text-slate-200 text-xs leading-relaxed max-w-xl">
+              أهلاً بك في <strong>Qarar AI</strong>. كيف يمكنني مساعدتك في قراراتك الاستثمارية اليوم؟
+            </div>
+          </div>
+        </div>
+        <div class="p-3 border-t border-slate-800 bg-slate-950/70 rounded-b-2xl">
+          <form id="fullAiChatForm" class="flex items-center gap-2">
+            <textarea id="fullAiChatInput" rows="1" placeholder="اكتب استفسارك المالي هنا..." class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-emerald-500 resize-none"></textarea>
+            <button type="submit" class="bg-emerald-500 text-slate-950 font-bold text-xs px-5 py-2.5 rounded-xl transition">إرسال</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: SIGNALS -->
+    <div id="tab-signals" class="tab-panel hidden space-y-4">
+      <div id="signalsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </div>
+
+    <!-- TAB 3: ADVISOR -->
+    <div id="tab-advisor" class="tab-panel hidden space-y-6">
+      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5">
+        <h2 class="text-base font-bold text-white mb-2">مُخطط الاستثمار الذكي</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 my-4">
+          <div class="bg-slate-950 border border-slate-800 rounded-xl p-3">
+            <div class="text-[11px] text-slate-400">إجمالي المبالغ المستثمرة</div>
+            <div class="text-base font-bold text-white mt-1" id="projTotalInvested">--</div>
+          </div>
+          <div class="bg-slate-950 border border-slate-800 rounded-xl p-3">
+            <div class="text-[11px] text-slate-400">الأرباح المتوقعة</div>
+            <div class="text-base font-bold text-emerald-400 mt-1" id="projTotalProfit">--</div>
+          </div>
+          <div class="bg-slate-950 border border-emerald-500/30 rounded-xl p-3">
+            <div class="text-[11px] text-slate-400">القيمة النهائية المتوقعة</div>
+            <div class="text-lg font-extrabold text-white mt-1" id="projFinalValue">--</div>
+          </div>
+        </div>
+        <div class="relative h-60 w-full"><canvas id="projectionChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- TAB 4: PORTFOLIO -->
+    <div id="tab-portfolio" class="tab-panel hidden space-y-4">
+      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5">
+        <h2 class="text-base font-bold text-white mb-4">الأصول المملوكة</h2>
+        <div class="overflow-x-auto">
+          <table class="w-full text-right text-xs">
+            <thead>
+              <tr class="border-b border-slate-800 text-slate-400">
+                <th class="py-2.5 px-3">الأصل</th>
+                <th class="py-2.5 px-3">الكمية</th>
+                <th class="py-2.5 px-3">السعر الحالي</th>
+                <th class="py-2.5 px-3">القيمة الإجمالية</th>
+                <th class="py-2.5 px-3">إجراء</th>
+              </tr>
+            </thead>
+            <tbody id="portfolioTableBody" class="divide-y divide-slate-800/70"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- PWA Readiness Modal (Hidden by Default) -->
+  <div id="playStoreReadinessModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/85 backdrop-blur-sm p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-xl w-full p-5 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-base font-bold text-white">📲 تثبيت التطبيق</h3>
+        <button type="button" id="closePlayStoreModalBtn" class="text-slate-400 hover:text-white">✕</button>
+      </div>
+      <p class="text-xs text-slate-300 leading-relaxed">
+        التطبيق جاهز للتثبيت كـ PWA كامل على الهاتف، ويمكن تصديره لمتجر Google Play عن طريق PWABuilder.
+      </p>
+      <div class="flex justify-end pt-2">
+        <button type="button" id="donePlayStoreModalBtn" class="px-4 py-2 bg-emerald-500 text-slate-950 font-bold text-xs rounded-xl">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const state = {
+        selectedMarket: 'EGX',
+        currency: 'EGP',
+        activeTab: 'dashboard',
+        chartRange: '1Y',
+        cashEGP: 120000,
+        holdings: [
+          { id: 'COMI', name: 'البنك التجاري الدولي (COMI)', units: 600, priceEGP: 125.15, costEGP: 112.0 },
+          { id: 'ETEL', name: 'المصرية للاتصالات (ETEL)', units: 400, priceEGP: 133.90, costEGP: 118.5 },
+          { id: 'GOLD24', name: 'ذهب عيار 24', units: 20, priceEGP: 7171.0, costEGP: 6450.0 }
+        ]
+      };
+
+      function switchTab(tabId) {
+        state.activeTab = tabId;
+        document.querySelectorAll('.tab-panel').forEach(el => el.classList.add('hidden'));
+        const target = document.getElementById('tab-' + tabId);
+        if (target) target.classList.remove('hidden');
+
+        document.querySelectorAll('.nav-tab').forEach(btn => {
+          if (btn.getAttribute('data-tab') === tabId) {
+            btn.className = 'nav-tab px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-emerald-500 text-slate-950 shadow';
+          } else {
+            btn.className = 'nav-tab px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-300 hover:text-white';
+          }
+        });
+      }
+
+      document.querySelectorAll('.nav-tab').forEach(b => {
+        b.addEventListener('click', () => switchTab(b.getAttribute('data-tab')));
+      });
+
+      const playModal = document.getElementById('playStoreReadinessModal');
+      const openPlayBtn = document.getElementById('openPlayStoreReadyBtn');
+      const closePlayBtn = document.getElementById('closePlayStoreModalBtn');
+      const donePlayBtn = document.getElementById('donePlayStoreModalBtn');
+
+      if (openPlayBtn) openPlayBtn.onclick = () => playModal.classList.remove('hidden');
+      if (closePlayBtn) closePlayBtn.onclick = () => playModal.classList.add('hidden');
+      if (donePlayBtn) donePlayBtn.onclick = () => playModal.classList.add('hidden');
+    })();
+  </script>
+</body>
+</html>
