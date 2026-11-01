@@ -1,0 +1,26 @@
+{
+  "name": "Qarar AI | قرار AI - المستشار الاستثماري الذكي",
+  "short_name": "Qarar AI",
+  "description": "منصة الاستثمار الذكي والمستشار المالي للسوق المصري والخليجي والإماراتي",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#020617",
+  "theme_color": "#10b981",
+  "dir": "rtl",
+  "lang": "ar",
+  "categories": [
+    "finance",
+    "business",
+    "productivity"
+  ],
+  "icons": [
+    {
+      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='110' fill='%2310b981'/><path d='M112 352l112-112 72 72 104-128' stroke='%23020617' stroke-width='44' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
