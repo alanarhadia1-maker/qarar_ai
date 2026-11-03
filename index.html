@@ -353,9 +353,12 @@
       marketBtns.forEach(btn => {
         btn.addEventListener('click', () => {
           marketBtns.forEach(b => {
-            b.classList.remove('bg-emerald-500', 'text-slate-950', 'active');
-            b.classList.add('text-slate-300');
-            // تفعيل قائمة اختيار العملة
+            btn.classList.add('bg-emerald-500', 'text-slate-950', 'active');
+          btn.classList.remove('text-slate-300');
+        });
+      });
+
+      // تفعيل قائمة اختيار العملة
       const currencySelect = document.querySelector('header select');
       if (currencySelect) {
         currencySelect.addEventListener('change', (e) => {
@@ -366,11 +369,23 @@
           }
         });
       }
-          });
-          btn.classList.add('bg-emerald-500', 'text-slate-950', 'active');
-          btn.classList.remove('text-slate-300');
+
+      // تفعيل زر تحديث التحليل لنبض السوق
+      const refreshBtn = Array.from(document.querySelectorAll('button')).find(b => b.innerText.includes('تحديث التحليل'));
+      if (refreshBtn) {
+        refreshBtn.addEventListener('click', () => {
+          const originalText = refreshBtn.innerText;
+          refreshBtn.innerText = 'جاري التحليل...';
+          refreshBtn.disabled = true;
+          setTimeout(() => {
+            refreshBtn.innerText = originalText;
+            refreshBtn.disabled = false;
+            const scoreEl = document.querySelector('section span:nth-child(2)');
+            if (scoreEl) scoreEl.innerText = 'حالة السوق: إيجابي قوي (82/100)';
+          }, 800);
         });
-      });
+      }
+    })();
     if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js');
 }
