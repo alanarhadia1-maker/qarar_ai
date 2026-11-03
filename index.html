@@ -14,7 +14,7 @@
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
-        navigator.serviceWorker.register("/sw.js").catch(() => {});
+        navigator.serviceWorker.register("./sw.js").catch(() => {});
       });
     }
   </script>
@@ -306,7 +306,7 @@
   </div>
 
   <script>
-    (function () {
+    document.addEventListener("DOMContentLoaded", function () {
       const state = {
         selectedMarket: 'EGX',
         currency: 'EGP',
@@ -347,38 +347,34 @@
       if (openPlayBtn) openPlayBtn.onclick = () => playModal.classList.remove('hidden');
       if (closePlayBtn) closePlayBtn.onclick = () => playModal.classList.add('hidden');
       if (donePlayBtn) donePlayBtn.onclick = () => playModal.classList.add('hidden');
-    })();
-   // تفعيل أزرار اختيار السوق
-      const marketBtns = Array.from(document.querySelectorAll('button')).filter(btn => 
-        btn.innerText.includes('السوق المصري') || 
-        btn.innerText.includes('السوق الخليجي') || 
-        btn.innerText.includes('السوق الإماراتي') || 
-        btn.innerText.includes('المحفظة المدمجة')
-      );
 
+      // تفعيل أزرار اختيار السوق
+      const marketBtns = Array.from(document.querySelectorAll('.market-switch-btn'));
       marketBtns.forEach(btn => {
         btn.addEventListener('click', () => {
           marketBtns.forEach(b => {
-            b.classList.remove('bg-emerald-500', 'text-slate-950', 'active');
+            b.classList.remove('bg-emerald-500', 'text-slate-950', 'shadow');
             b.classList.add('text-slate-300');
           });
-          btn.classList.add('bg-emerald-500', 'text-slate-950', 'active');
+          btn.classList.add('bg-emerald-500', 'text-slate-950', 'shadow');
           btn.classList.remove('text-slate-300');
         });
       });
 
       // تفعيل قائمة اختيار العملة
-      const currencySelect = document.querySelector('header select');
+      const currencySelect = document.getElementById('currencySelect');
       if (currencySelect) {
         currencySelect.addEventListener('change', (e) => {
           const val = e.target.value;
-          const portfolioVal = document.querySelector('main div div div:nth-child(2)');
-          if (portfolioVal && portfolioVal.innerText.includes('ج.م')) {
-            portfolioVal.innerText = portfolioVal.innerText.replace(/ج\.م|ر\.س|د\.إ|\$|£|€/, val);
+          const kpiTotal = document.getElementById('kpiTotalValue');
+          if (kpiTotal) {
+            kpiTotal.innerText = kpiTotal.innerText.replace(/ج\.م|ر\.س|د\.إ|\$|£|€/, val);
           }
         });
-    // تفعيل زر تحديث التحليل لنبض السوق
-      const refreshBtn = Array.from(document.querySelectorAll('button')).find(b => b.innerText.includes('تحديث التحليل'));
+      }
+
+      // تفعيل زر تحديث التحليل لنبض السوق
+      const refreshBtn = document.getElementById('refreshPulseBtn');
       if (refreshBtn) {
         refreshBtn.addEventListener('click', () => {
           const originalText = refreshBtn.innerText;
@@ -387,14 +383,10 @@
           setTimeout(() => {
             refreshBtn.innerText = originalText;
             refreshBtn.disabled = false;
-            const scoreEl = document.querySelector('section span:nth-child(2)');
+            const scoreEl = document.getElementById('marketSentimentBadge');
             if (scoreEl) scoreEl.innerText = 'حالة السوق: إيجابي قوي (82/100)';
           }, 800);
         });
-      }
-
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js');
       }
     });
   </script>
