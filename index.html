@@ -540,19 +540,71 @@
           const range = btn.getAttribute('data-range');
           if (!range || !rangeData[range] || !perfChartInstance) return;
 
-          // تحديث شكل الأزرار
-          rangeBtns.forEach(b => {
-            b.className = 'range-btn px-2.5 py-1 rounded text-xs text-slate-400';
-          });
-          btn.className = 'range-btn px-2.5 py-1 rounded text-xs bg-emerald-500 text-slate-950 font-bold';
-
-          // تحديث بيانات الرسم البياني
+        // تحديث بيانات الرسم البياني
           perfChartInstance.data.labels = rangeData[range].labels;
           perfChartInstance.data.datasets[0].data = rangeData[range].data;
           perfChartInstance.update();
         });
       });
+
+      // محرك محادثة قرار AI الذكي
+      const chatForm = document.getElementById('fullAiChatForm');
+      const chatInput = document.getElementById('fullAiChatInput');
+      const chatMessages = document.getElementById('fullAiChatMessages');
+
+      if (chatForm && chatInput && chatMessages) {
+        chatForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const query = chatInput.value.trim();
+          if (!query) return;
+
+          // إضافة رسالة المستخدم
+          const userMsgHtml = `
+            <div class="flex items-start gap-3 justify-end">
+              <div class="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-3 text-slate-100 text-xs leading-relaxed max-w-md">
+                ${query}
+              </div>
+              <div class="w-8 h-8 rounded-xl bg-slate-800 text-emerald-400 font-bold flex items-center justify-center text-xs shrink-0">أنت</div>
+            </div>
+          `;
+          chatMessages.insertAdjacentHTML('beforeend', userMsgHtml);
+          chatInput.value = '';
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+
+          // تجهيز رد المستشار الذكي بناءً على بيانات التطبيق
+          setTimeout(() => {
+            let reply = '';
+            const qLower = query.toLowerCase();
+
+            if (qLower.includes('ذهب') || qLower.includes('gold')) {
+              reply = 'بناءً على بيانات محفظتك الحالية: الذهب عيار 24 مسجل 7,171 ج.م ويمثل نحو 25% من توزيع الأصول كأداة تحوط ممتازة ضد التضخم وتقلبات العملة.';
+            } else if (qLower.includes('سعودي') || qLower.includes('تاسي') || qLower.includes('خليج')) {
+              reply = 'مؤشر تاسي يتداول عند 12,180.50 نقطة بحالة صعود قوي (84/100). نوصي بالتركيز على أسهم البنوك والتقنية ذات التدفقات النقدية الحرة.';
+            } else if (qLower.includes('مصر') || qLower.includes('egx')) {
+              reply = 'مؤشر EGX 30 عند 49,234.35 نقطة. نوصي باستراتيجية الشراء التراكمي في الأسهم القيادية مثل CIB والمصرية للاتصالات.';
+            } else if (qLower.includes('إمارات') || qLower.includes('دبي') || qLower.includes('uae')) {
+              reply = 'سوق دبي المالي عند 4,420.15 نقطة مدعوماً بزخم القطاع العقاري وتوزيعات الأرباح القوية لشركات النقل والاستثمار.';
+            } else if (qLower.includes('محفظ') || qLower.includes('رصيد') || qLower.includes('ارباح') || qLower.includes('أرباح')) {
+              reply = 'إجمالي محفظتك الحالية 553,399 ج.م بنسبة سيولة نقدية 21.7% (120,000 ج.م)، والعائد الإجمالي محقق +13.0% بدرجة أمان 86%.';
+            } else {
+              reply = `استفسارك عن: "<strong>${query}</strong>" يحتاج لمتابعة بيانات السوق المباشرة. يمكنك متابعة الأسعار والبيانات اللحظية الموسعة عبر الرابط المالي المعتمد: <br><a href="https://www.tradingview.com" target="_blank" class="text-emerald-400 underline font-bold mt-1 inline-block">فتح منصة التحليل المالي اللحظي ↗</a>`;
+            }
+
+            const aiMsgHtml = `
+              <div class="flex items-start gap-3">
+                <div class="w-8 h-8 rounded-xl bg-emerald-500 text-slate-950 font-extrabold flex items-center justify-center text-xs shrink-0">AI</div>
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 text-slate-200 text-xs leading-relaxed max-w-xl">
+                  ${reply}
+                </div>
+              </div>
+            `;
+            chatMessages.insertAdjacentHTML('beforeend', aiMsgHtml);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+          }, 600);
+        });
+      }
     });
   </script>
 </body>
 </html>
+   
