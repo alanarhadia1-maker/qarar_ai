@@ -348,16 +348,85 @@
       if (closePlayBtn) closePlayBtn.onclick = () => playModal.classList.add('hidden');
       if (donePlayBtn) donePlayBtn.onclick = () => playModal.classList.add('hidden');
 
-      // تفعيل أزرار اختيار السوق
+     // قاعدة بيانات وبيانات الأسواق اللحظية
+      const marketsData = {
+        'EGX': {
+          ticker: 'مؤشر EGX 30: <strong class="text-emerald-400 num-ltr">49,234.35</strong> نقطة',
+          badge: 'نبض السوق المصري (EGX)',
+          sentiment: 'حالة السوق: إيجابي متوازن (76/100)',
+          pulseText: 'يتداول مؤشر EGX 30 عند 49,234 نقطة؛ يوصي قرار AI بالتركيز على الأسهم ذات التدفقات النقدية القوية.',
+          portfolioPill: 'السوق المصري',
+          totalVal: '553,399 ج.م',
+          change: '+13.0%',
+          profit: '+49,699 ج.م'
+        },
+        'GCC': {
+          ticker: 'مؤشر تاسي (TASI): <strong class="text-emerald-400 num-ltr">12,180.50</strong> نقطة',
+          badge: 'نبض السوق السعودي والخليجي',
+          sentiment: 'حالة السوق: صعود قوي (84/100)',
+          pulseText: 'دعم قوي لقطاع البنوك والطاقة في تاسي مع استقرار خام برنت، فرص نمو ممتازة في قطاع التقنية.',
+          portfolioPill: 'السوق الخليجي',
+          totalVal: '145,800 ر.س',
+          change: '+8.4%',
+          profit: '+11,350 ر.س'
+        },
+        'UAE': {
+          ticker: 'مؤشر سوق دبي (DFM): <strong class="text-emerald-400 num-ltr">4,420.15</strong> نقطة',
+          badge: 'نبض السوق الإماراتي',
+          sentiment: 'حالة السوق: مستقر مرتفع (79/100)',
+          pulseText: 'زخم شرائي للمستثمرين الأجانب في أسهم العقار والنقل وسوق أبوظبي المالي.',
+          portfolioPill: 'السوق الإماراتي',
+          totalVal: '128,500 د.إ',
+          change: '+6.9%',
+          profit: '+8,290 د.إ'
+        },
+        'BOTH': {
+          ticker: 'المحفظة الاستثمارية الموحدة: <strong class="text-emerald-400 num-ltr">عائد تراكمي ممتاز</strong>',
+          badge: 'نبض المحفظة المدمجة',
+          sentiment: 'توزيع المخاطر: آمن جداً (88/100)',
+          pulseText: 'استراتيجية التحوط وتوزيع السيولة بين الأسهم المصرية، الخليجية، والذهب تقلل المخاطر بنسبة 40%.',
+          portfolioPill: 'المحفظة المدمجة',
+          totalVal: '28,450 $',
+          change: '+15.2%',
+          profit: '+3,760 $'
+        }
+      };
+
+      // تفعيل أزرار اختيار السوق وتحديث الشاشة فورياً
       const marketBtns = Array.from(document.querySelectorAll('.market-switch-btn'));
       marketBtns.forEach(btn => {
         btn.addEventListener('click', () => {
+          const mKey = btn.getAttribute('data-market');
+
+          // تحديث تصميم الأزرار
           marketBtns.forEach(b => {
             b.classList.remove('bg-emerald-500', 'text-slate-950', 'shadow');
             b.classList.add('text-slate-300');
           });
           btn.classList.add('bg-emerald-500', 'text-slate-950', 'shadow');
           btn.classList.remove('text-slate-300');
+
+          // تحديث عناصر الصفحة طبقاً للسوق
+          if (marketsData[mKey]) {
+            const data = marketsData[mKey];
+            const tickerEl = document.getElementById('marketIndexLiveTicker');
+            const badgeEl = document.getElementById('pulseMarketBadge');
+            const sentimentEl = document.getElementById('marketSentimentBadge');
+            const pulseTextEl = document.getElementById('aiPulseText');
+            const pillEl = document.getElementById('activeMarketPill');
+            const valEl = document.getElementById('kpiTotalValue');
+            const changeEl = document.getElementById('kpiTotalChange');
+            const profitEl = document.getElementById('kpiTotalProfit');
+
+            if (tickerEl) tickerEl.innerHTML = data.ticker;
+            if (badgeEl) badgeEl.innerText = data.badge;
+            if (sentimentEl) sentimentEl.innerText = data.sentiment;
+            if (pulseTextEl) pulseTextEl.innerText = data.pulseText;
+            if (pillEl) pillEl.innerText = data.portfolioPill;
+            if (valEl) valEl.innerText = data.totalVal;
+            if (changeEl) changeEl.innerText = data.change;
+            if (profitEl) profitEl.innerText = data.profit;
+          }
         });
       });
 
