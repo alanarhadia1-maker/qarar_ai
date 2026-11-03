@@ -388,6 +388,67 @@
           }, 800);
         });
       }
+      // تهيئة الرسوم البيانية (Chart.js)
+      let perfChartInstance = null;
+      let allocChartInstance = null;
+
+      function initCharts() {
+        const perfCtx = document.getElementById('performanceChart')?.getContext('2d');
+        if (perfCtx && typeof Chart !== 'undefined') {
+          perfChartInstance = new Chart(perfCtx, {
+            type: 'line',
+            data: {
+              labels: ['يناير', 'مارس', 'مايو', 'يوليو', 'سبتمبر', 'نوفمبر'],
+              datasets: [{
+                label: 'أداء المحفظة (%)',
+                data: [5, 9, 7, 14, 11, 16.5],
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                fill: true,
+                tension: 0.35,
+                borderWidth: 2.5
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: { legend: { display: false } },
+              scales: {
+                x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
+                y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }
+              }
+            }
+          });
+        }
+
+        const allocCtx = document.getElementById('allocationChart')?.getContext('2d');
+        if (allocCtx && typeof Chart !== 'undefined') {
+          allocChartInstance = new Chart(allocCtx, {
+            type: 'doughnut',
+            data: {
+              labels: ['أسهم مصرية', 'ذهب', 'سيولة نقدية'],
+              datasets: [{
+                data: [55, 25, 20],
+                backgroundColor: ['#10b981', '#f59e0b', '#06b6d4'],
+                borderWidth: 0
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: 'bottom',
+                  labels: { color: '#cbd5e1', font: { family: 'Cairo', size: 11 } }
+                }
+              },
+              cutout: '70%'
+            }
+          });
+        }
+      }
+
+      initCharts();
     });
   </script>
 </body>
