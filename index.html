@@ -393,11 +393,12 @@
             if (scoreEl) scoreEl.innerText = 'حالة السوق: إيجابي قوي (82/100)';
           }, 800);
           });
-    }
-  })();
+      }
+    })();
+
     if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js');
-}
+      navigator.serviceWorker.register('./sw.js', { scope: './' });
+    }
   </script>
 </body>
 </html>
