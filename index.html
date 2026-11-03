@@ -348,12 +348,21 @@
       if (closePlayBtn) closePlayBtn.onclick = () => playModal.classList.add('hidden');
       if (donePlayBtn) donePlayBtn.onclick = () => playModal.classList.add('hidden');
     })();
-    // تفعيل أزرار اختيار السوق
-      const marketBtns = document.querySelectorAll('button[class*="market-btn"], .market-btn');
+   // تفعيل أزرار اختيار السوق
+      const marketBtns = Array.from(document.querySelectorAll('button')).filter(btn => 
+        btn.innerText.includes('السوق المصري') || 
+        btn.innerText.includes('السوق الخليجي') || 
+        btn.innerText.includes('السوق الإماراتي') || 
+        btn.innerText.includes('المحفظة المدمجة')
+      );
+
       marketBtns.forEach(btn => {
         btn.addEventListener('click', () => {
           marketBtns.forEach(b => {
-            btn.classList.add('bg-emerald-500', 'text-slate-950', 'active');
+            b.classList.remove('bg-emerald-500', 'text-slate-950', 'active');
+            b.classList.add('text-slate-300');
+          });
+          btn.classList.add('bg-emerald-500', 'text-slate-950', 'active');
           btn.classList.remove('text-slate-300');
         });
       });
