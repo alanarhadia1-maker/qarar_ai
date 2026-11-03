@@ -518,19 +518,19 @@
       }
 
       initCharts();
-      // تفعيل أزرار الفترات الزمنية للرسم البياني
+    // تفعيل أزرار الفترات الزمنية للرسم البياني (شهور واقعية كاملة)
       const rangeData = {
         '1M': {
-          labels: ['أسبوع 1', 'أسبوع 2', 'أسبوع 3', 'أسبوع 4'],
+          labels: ['الأسبوع 1', 'الأسبوع 2', 'الأسبوع 3', 'الأسبوع 4 (الحالي)'],
           data: [14.2, 15.0, 14.8, 16.5]
         },
         '3M': {
-          labels: ['الشهر الأول', 'الشهر الثاني', 'الشهر الحالي'],
-          data: [11.0, 13.5, 16.5]
+          labels: ['سبتمبر', 'أكتوبر', 'نوفمبر (الحالي)'],
+          data: [11.2, 13.8, 16.5]
         },
         '1Y': {
-          labels: ['يناير', 'مارس', 'مايو', 'يوليو', 'سبتمبر', 'نوفمبر'],
-          data: [5, 9, 7, 14, 11, 16.5]
+          labels: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'],
+          data: [5.0, 6.2, 8.5, 7.8, 9.4, 11.0, 10.5, 12.3, 11.2, 13.8, 16.5, 18.0]
         }
       };
 
@@ -540,71 +540,109 @@
           const range = btn.getAttribute('data-range');
           if (!range || !rangeData[range] || !perfChartInstance) return;
 
-        // تحديث بيانات الرسم البياني
+          rangeBtns.forEach(b => {
+            b.className = 'range-btn px-2.5 py-1 rounded text-xs text-slate-400';
+          });
+          btn.className = 'range-btn px-2.5 py-1 rounded text-xs bg-emerald-500 text-slate-950 font-bold';
+
           perfChartInstance.data.labels = rangeData[range].labels;
           perfChartInstance.data.datasets[0].data = rangeData[range].data;
           perfChartInstance.update();
         });
       });
 
-      // محرك محادثة قرار AI الذكي
+      // محرك محادثة قرار AI الذكي عبر Gemini API
       const chatForm = document.getElementById('fullAiChatForm');
       const chatInput = document.getElementById('fullAiChatInput');
       const chatMessages = document.getElementById('fullAiChatMessages');
 
+      async function getGeminiResponse(userPrompt) {
+        let apiKey = localStorage.getItem('qarar_gemini_key');
+        if (!apiKey) {
+          apiKey = prompt('من فضلك أدخل مفتاح Gemini API الخاص بك لتفعيل المستشار الذكي:');
+          if (apiKey) {
+            localStorage.setItem('qarar_gemini_key', apiKey.trim());
+          } else {
+            return 'يرجى إدخال مفتاح Gemini API لتتمكن من التحدث مع المستشار الذكي.';
+          }
+        }
+
+        const systemPrompt = `أنت "مستشار قرار AI" - مستشار مالي واقتصادي ذكي محترف.
+بيانات المستخدم الحالية في التطبيق:
+- إجمالي المحفظة: 553,399 ج.م (أرباح +13.0%)
+- الأصول: CIB (600 سهم)، المصرية للاتصالات (400 سهم)، ذهب عيار 24 (20 جرام بسعر 7,171 ج.م للجرام)
+- السيولة النقدية: 120,000 ج.م
+- حالة الأسواق: EGX عند 49,234، تاسي السعودي عند 12,180، دبي عند 4,420.
+دورك: أجب بدقة واحترافية وبشكل مباشر على أي سؤال مالي، سواء عن محفظته، أو أسواق عالمية (أمريكي، فرنسي، عملات، نفط، أسهم). لا تعطِه روابط خارجية أبداً، بل اشرح وحلل بنفسك كخبير مالي متكامل. تحدث بلهجة عربية مهنية وودودة.`;
+
+        try {
+          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [
+                { role: 'user', parts: [{ text: `${systemPrompt}\n\nسؤال المستخدم: ${userPrompt}` }] }
+              ]
+            })
+          });
+
+          const data = await res.json();
+          if (data.error) {
+            if (data.error.code === 400 || data.error.status === 'INVALID_ARGUMENT') {
+              localStorage.removeItem('qarar_gemini_key');
+              return 'مفتاح API غير صالح. يرجى إعادة إدخال المفتاح الصحيح.';
+            }
+            return `خطأ: ${data.error.message}`;
+          }
+          return data.candidates?.[0]?.content?.parts?.[0]?.text || 'عذراً، لم أستطع تحليل الطلب حالياً.';
+        } catch (err) {
+          return 'تعذر الاتصال بالخادم، يرجى التأكد من اتصال الإنترنت.';
+        }
+      }
+
       if (chatForm && chatInput && chatMessages) {
-        chatForm.addEventListener('submit', (e) => {
+        chatForm.addEventListener('submit', async (e) => {
           e.preventDefault();
           const query = chatInput.value.trim();
           if (!query) return;
 
-          // إضافة رسالة المستخدم
-          const userMsgHtml = `
+          chatMessages.insertAdjacentHTML('beforeend', `
             <div class="flex items-start gap-3 justify-end">
               <div class="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-3 text-slate-100 text-xs leading-relaxed max-w-md">
                 ${query}
               </div>
               <div class="w-8 h-8 rounded-xl bg-slate-800 text-emerald-400 font-bold flex items-center justify-center text-xs shrink-0">أنت</div>
             </div>
-          `;
-          chatMessages.insertAdjacentHTML('beforeend', userMsgHtml);
+          `);
           chatInput.value = '';
           chatMessages.scrollTop = chatMessages.scrollHeight;
 
-          // تجهيز رد المستشار الذكي بناءً على بيانات التطبيق
-          setTimeout(() => {
-            let reply = '';
-            const qLower = query.toLowerCase();
-
-            if (qLower.includes('ذهب') || qLower.includes('gold')) {
-              reply = 'بناءً على بيانات محفظتك الحالية: الذهب عيار 24 مسجل 7,171 ج.م ويمثل نحو 25% من توزيع الأصول كأداة تحوط ممتازة ضد التضخم وتقلبات العملة.';
-            } else if (qLower.includes('سعودي') || qLower.includes('تاسي') || qLower.includes('خليج')) {
-              reply = 'مؤشر تاسي يتداول عند 12,180.50 نقطة بحالة صعود قوي (84/100). نوصي بالتركيز على أسهم البنوك والتقنية ذات التدفقات النقدية الحرة.';
-            } else if (qLower.includes('مصر') || qLower.includes('egx')) {
-              reply = 'مؤشر EGX 30 عند 49,234.35 نقطة. نوصي باستراتيجية الشراء التراكمي في الأسهم القيادية مثل CIB والمصرية للاتصالات.';
-            } else if (qLower.includes('إمارات') || qLower.includes('دبي') || qLower.includes('uae')) {
-              reply = 'سوق دبي المالي عند 4,420.15 نقطة مدعوماً بزخم القطاع العقاري وتوزيعات الأرباح القوية لشركات النقل والاستثمار.';
-            } else if (qLower.includes('محفظ') || qLower.includes('رصيد') || qLower.includes('ارباح') || qLower.includes('أرباح')) {
-              reply = 'إجمالي محفظتك الحالية 553,399 ج.م بنسبة سيولة نقدية 21.7% (120,000 ج.م)، والعائد الإجمالي محقق +13.0% بدرجة أمان 86%.';
-            } else {
-              reply = `استفسارك عن: "<strong>${query}</strong>" يحتاج لمتابعة بيانات السوق المباشرة. يمكنك متابعة الأسعار والبيانات اللحظية الموسعة عبر الرابط المالي المعتمد: <br><a href="https://www.tradingview.com" target="_blank" class="text-emerald-400 underline font-bold mt-1 inline-block">فتح منصة التحليل المالي اللحظي ↗</a>`;
-            }
-
-            const aiMsgHtml = `
-              <div class="flex items-start gap-3">
-                <div class="w-8 h-8 rounded-xl bg-emerald-500 text-slate-950 font-extrabold flex items-center justify-center text-xs shrink-0">AI</div>
-                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 text-slate-200 text-xs leading-relaxed max-w-xl">
-                  ${reply}
-                </div>
+          const loadingId = 'ai-loading-' + Date.now();
+          chatMessages.insertAdjacentHTML('beforeend', `
+            <div id="${loadingId}" class="flex items-start gap-3">
+              <div class="w-8 h-8 rounded-xl bg-emerald-500 text-slate-950 font-extrabold flex items-center justify-center text-xs shrink-0">AI</div>
+              <div class="bg-slate-950 border border-slate-800 rounded-2xl p-3 text-slate-400 text-xs flex items-center gap-2">
+                <span class="animate-pulse">جاري التحليل واستدعاء البيانات...</span>
               </div>
-            `;
-            chatMessages.insertAdjacentHTML('beforeend', aiMsgHtml);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-          }, 600);
+            </div>
+          `);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+
+          const responseText = await getGeminiResponse(query);
+          document.getElementById(loadingId)?.remove();
+
+          chatMessages.insertAdjacentHTML('beforeend', `
+            <div class="flex items-start gap-3">
+              <div class="w-8 h-8 rounded-xl bg-emerald-500 text-slate-950 font-extrabold flex items-center justify-center text-xs shrink-0">AI</div>
+              <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 text-slate-200 text-xs leading-relaxed max-w-xl whitespace-pre-line">
+                ${responseText}
+              </div>
+            </div>
+          `);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
         });
       }
     });
   </script>
 </body>
 </html>
-   
