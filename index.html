@@ -449,6 +449,40 @@
       }
 
       initCharts();
+      // تفعيل أزرار الفترات الزمنية للرسم البياني
+      const rangeData = {
+        '1M': {
+          labels: ['أسبوع 1', 'أسبوع 2', 'أسبوع 3', 'أسبوع 4'],
+          data: [14.2, 15.0, 14.8, 16.5]
+        },
+        '3M': {
+          labels: ['الشهر الأول', 'الشهر الثاني', 'الشهر الحالي'],
+          data: [11.0, 13.5, 16.5]
+        },
+        '1Y': {
+          labels: ['يناير', 'مارس', 'مايو', 'يوليو', 'سبتمبر', 'نوفمبر'],
+          data: [5, 9, 7, 14, 11, 16.5]
+        }
+      };
+
+      const rangeBtns = document.querySelectorAll('.range-btn');
+      rangeBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const range = btn.getAttribute('data-range');
+          if (!range || !rangeData[range] || !perfChartInstance) return;
+
+          // تحديث شكل الأزرار
+          rangeBtns.forEach(b => {
+            b.className = 'range-btn px-2.5 py-1 rounded text-xs text-slate-400';
+          });
+          btn.className = 'range-btn px-2.5 py-1 rounded text-xs bg-emerald-500 text-slate-950 font-bold';
+
+          // تحديث بيانات الرسم البياني
+          perfChartInstance.data.labels = rangeData[range].labels;
+          perfChartInstance.data.datasets[0].data = rangeData[range].data;
+          perfChartInstance.update();
+        });
+      });
     });
   </script>
 </body>
