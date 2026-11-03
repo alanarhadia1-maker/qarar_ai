@@ -348,6 +348,18 @@
       if (closePlayBtn) closePlayBtn.onclick = () => playModal.classList.add('hidden');
       if (donePlayBtn) donePlayBtn.onclick = () => playModal.classList.add('hidden');
     })();
+    // تفعيل أزرار اختيار السوق
+      const marketBtns = document.querySelectorAll('button[class*="market-btn"], .market-btn');
+      marketBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          marketBtns.forEach(b => {
+            b.classList.remove('bg-emerald-500', 'text-slate-950', 'active');
+            b.classList.add('text-slate-300');
+          });
+          btn.classList.add('bg-emerald-500', 'text-slate-950', 'active');
+          btn.classList.remove('text-slate-300');
+        });
+      });
     if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js');
 }
