@@ -601,6 +601,13 @@
       }
 
       if (chatForm && chatInput && chatMessages) {
+        // إرسال بالـ Enter والنزول لسطر جديد بـ Shift + Enter
+        chatInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            chatForm.requestSubmit();
+          }
+        });
         chatForm.addEventListener('submit', async (e) => {
           e.preventDefault();
           const query = chatInput.value.trim();
