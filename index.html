@@ -348,6 +348,9 @@
       if (closePlayBtn) closePlayBtn.onclick = () => playModal.classList.add('hidden');
       if (donePlayBtn) donePlayBtn.onclick = () => playModal.classList.add('hidden');
     })();
+    if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js');
+}
   </script>
 </body>
 </html>
