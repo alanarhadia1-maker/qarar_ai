@@ -377,9 +377,7 @@
             portfolioVal.innerText = portfolioVal.innerText.replace(/ج\.م|ر\.س|د\.إ|\$|£|€/, val);
           }
         });
-      }
-
-      // تفعيل زر تحديث التحليل لنبض السوق
+     // تفعيل زر تحديث التحليل لنبض السوق
       const refreshBtn = Array.from(document.querySelectorAll('button')).find(b => b.innerText.includes('تحديث التحليل'));
       if (refreshBtn) {
         refreshBtn.addEventListener('click', () => {
@@ -392,7 +390,7 @@
             const scoreEl = document.querySelector('section span:nth-child(2)');
             if (scoreEl) scoreEl.innerText = 'حالة السوق: إيجابي قوي (82/100)';
           }, 800);
-          });
+        });
       }
     })();
 
