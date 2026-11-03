@@ -355,6 +355,17 @@
           marketBtns.forEach(b => {
             b.classList.remove('bg-emerald-500', 'text-slate-950', 'active');
             b.classList.add('text-slate-300');
+            // تفعيل قائمة اختيار العملة
+      const currencySelect = document.querySelector('header select');
+      if (currencySelect) {
+        currencySelect.addEventListener('change', (e) => {
+          const val = e.target.value;
+          const portfolioVal = document.querySelector('main div div div:nth-child(2)');
+          if (portfolioVal && portfolioVal.innerText.includes('ج.م')) {
+            portfolioVal.innerText = portfolioVal.innerText.replace(/ج\.م|ر\.س|د\.إ|\$|£|€/, val);
+          }
+        });
+      }
           });
           btn.classList.add('bg-emerald-500', 'text-slate-950', 'active');
           btn.classList.remove('text-slate-300');
